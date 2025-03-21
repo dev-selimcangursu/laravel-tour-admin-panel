@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Hotels;
 use App\Models\TourFeatures;
 use App\Models\TourGuides;
+use App\Models\TourImages;
 use App\Models\Tours;
 use App\Models\TourServices;
 use App\Models\TourSubcategories;
@@ -81,7 +82,23 @@ class TourController extends Controller
             }
 
             // Tur Görsellerinin Veritabanına Eklenmesi.
-
+            $pictures = [
+                'picture_first' => $request->file('picture_first'),
+                'picture_second' => $request->file('picture_second'),
+                'picture_third' => $request->file('picture_third'),
+                'picture_fourth' => $request->file('picture_fourth'),
+            ];
+    
+            foreach ($pictures as $key => $picture) {
+                if ($picture && $picture->isValid()) {
+                    $imageName = time() . '-' . uniqid() . '.' . $picture->getClientOriginalExtension();
+                    $imagePath = $picture->storeAs('assets/img/tours', $imageName, 'public');
+                    $tourImage = new TourImages();
+                    $tourImage->tour_id = $new_tour->id;
+                    $tourImage->picture_image = $imagePath;
+                    $tourImage->save();
+                }
+            }
 
     
             return response()->json(['success' => true, 'message' => 'Tur Başarıyla Eklendi']);

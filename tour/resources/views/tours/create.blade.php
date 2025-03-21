@@ -190,6 +190,50 @@
                           @endforeach                                    
                       </div>
                   </div>
+                  <div class="col-md-12">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label><b>Tur Görseli 1 </b></label>
+                          <input
+                            type="file"
+                            class="form-control"
+                            id="picture_first"
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label><b>Tur Görseli 2 </b></label>
+                          <input
+                            type="file"
+                            class="form-control"
+                            id="picture_second"
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label><b>Tur Görseli 3 </b></label>
+                          <input
+                            type="file"
+                            class="form-control"
+                            id="picture_third"
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label><b>Tur Görseli 4 </b></label>
+                          <input
+                            type="file"
+                            class="form-control"
+                            id="picture_fourth"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   
                 </div>
                 <button id="save" class="btn btn-success float-end"> <i class="fas fa-save"></i>Turu Oluştur</button>
@@ -235,10 +279,24 @@
         if (tour_picture) {
             formData.append('tour_picture', tour_picture);
         }
+        let picture_first = $('#picture_first')[0].files[0];
+        if (picture_first) {
+            formData.append('picture_first', picture_first);
+        }
+        let picture_second = $('#picture_second')[0].files[0];
+        if (picture_second) {
+            formData.append('picture_second', picture_second);
 
+        }  
+        let picture_third = $('#picture_third')[0].files[0];
+        if (picture_third) {
+            formData.append('picture_third', picture_third);
+        }  
+        let picture_fourth = $('#picture_fourth')[0].files[0];
+        if (picture_fourth) {
+            formData.append('picture_fourth', picture_fourth);
+        }
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-
-  
 
         $.ajax({
             type: "POST",
