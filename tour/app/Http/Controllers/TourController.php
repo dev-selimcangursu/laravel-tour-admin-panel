@@ -21,7 +21,7 @@ class TourController extends Controller
     {
         return view('tours.index');
     }
-
+    // Yeni Tur Ekle Sayfası
     public function create()
     {
         $hotels = Hotels::all();
@@ -31,6 +31,7 @@ class TourController extends Controller
         $tour_services = TourServices::all();
         return view('tours.create',compact('tour_subcategories','hotels','guides','supervisors','tour_services'));
     }
+    // Yeni Tur Ekle Post İşlemi
     public function store(Request $request)
     {
         try {
@@ -54,13 +55,11 @@ class TourController extends Controller
                 $imagePath = $image->storeAs('assets/img/tours', $imageName, 'public');
                 $new_tour->main_picture = $imagePath;
             }
-    
             $new_tour->directory_id = $request->input('directory_id');
             $new_tour->supervisor_id = $request->input('supervisor_id');
             $new_tour->status_id = 1;
             $new_tour->user_id = Auth::user()->id;
             $new_tour->save();
-
             // Tur Özelliklerini Veritabanına Eklenmesi.
             if ($request->has('included_services') && is_array($includedServices = json_decode($request->input('included_services')))) {
                 foreach ($includedServices as $value) {
@@ -80,7 +79,6 @@ class TourController extends Controller
                     $tour_service->save();
                 }
             }
-
             // Tur Görsellerinin Veritabanına Eklenmesi.
             $pictures = [
                 'picture_first' => $request->file('picture_first'),
@@ -88,7 +86,6 @@ class TourController extends Controller
                 'picture_third' => $request->file('picture_third'),
                 'picture_fourth' => $request->file('picture_fourth'),
             ];
-    
             foreach ($pictures as $key => $picture) {
                 if ($picture && $picture->isValid()) {
                     $imageName = time() . '-' . uniqid() . '.' . $picture->getClientOriginalExtension();
@@ -99,13 +96,26 @@ class TourController extends Controller
                     $tourImage->save();
                 }
             }
-
-    
             return response()->json(['success' => true, 'message' => 'Tur Başarıyla Eklendi']);
         } catch (Exception $error) {
             return response()->json(['success' => false, 'message' => 'Tur Eklenemedi: ' . $error->getMessage()]);
         }
     }
+    // Tur Detay Sayfası
+    public function edit(Request $request)
+    {
+        return view('tours.edit');
+    }
+    // Tur İndex Sayfasında Turların Listelenmesi
+    public function fetch(Request $request)
+    {
+        $tours = Tours::query()
+            ->join('tour_supervisors', 'tours.supervisor_id', '=', 'tour_supervisors.id')
+            ->select('tours.*', 'tour_supervisors.fullname as supervisor_fullname');
+    
+        return datatables()->eloquent($tours)->make(true);
+    }
+    
     
     
 }

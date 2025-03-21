@@ -233,8 +233,7 @@
                         </div>
                       </div>
                     </div>
-                  </div>
-                  
+                  </div>             
                 </div>
                 <button id="save" class="btn btn-success float-end"> <i class="fas fa-save"></i>Turu Oluştur</button>
               </form>
@@ -244,6 +243,7 @@
 </div>
 <script>
   $(document).ready(function(){
+    // Yeni Tur Ekle
     $('#save').click(function(e) {
         e.preventDefault();
         
@@ -268,7 +268,6 @@
          includedServices.push($(this).val());
         });
         formData.append('included_services', JSON.stringify(includedServices));  
-
         let excludedServices = [];
          $('input[name="excluded_services[]"]:checked').each(function() {
           excludedServices.push($(this).val());
@@ -286,7 +285,6 @@
         let picture_second = $('#picture_second')[0].files[0];
         if (picture_second) {
             formData.append('picture_second', picture_second);
-
         }  
         let picture_third = $('#picture_third')[0].files[0];
         if (picture_third) {

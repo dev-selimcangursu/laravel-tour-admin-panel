@@ -11,8 +11,8 @@ Route::get('/dashboard',[DashboardController::class,'index'])->middleware(['auth
 Route::get('/tours',[TourController::class,'index'])->name('tours.index');
 Route::get('/tours/create',[TourController::class,'create'])->name('tours.create');
 Route::post('/tours/store',[TourController::class,'store'])->name('tours.store');
-
-
+Route::get('/tours/fetch',[TourController::class,'fetch'])->name('tours.fetch');
+Route::get('/tours/edit/{id}',[TourController::class,'edit'])->name('tours.edit');
 
 
 

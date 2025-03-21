@@ -76,8 +76,7 @@
 	<script src="{{asset('assets/js/demo.js')}}"></script>
 	<script>
 	    $(document).ready(function() {
-         $('#basic-datatables').DataTable({
-		 });
+       
 
     })
 		$('#lineChart').sparkline([102,109,120,99,110,105,115], {

@@ -45,12 +45,12 @@
                     <div class="collapse" id="base">
                         <ul class="nav nav-collapse">
                             <li>
-                                <a href="components/buttons.html">
+                                <a href="{{route('tours.create')}}">
                                     <span class="sub-item">Yeni Tur Ekle</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="components/avatars.html">
+                                <a href="{{route('tours.index')}}">
                                     <span class="sub-item">Turları Görüntüle</span>
                                 </a>
                             </li>                                                                        

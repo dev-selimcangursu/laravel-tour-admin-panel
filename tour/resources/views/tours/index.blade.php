@@ -25,18 +25,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>System Architect</td>
-                                <td>Yurtiçi Tur</td>
-                                <td>25.03.2025</td>
-                                <td>30.03.2025</td>
-                                <td>5500 TL</td>
-                                <td>200</td>
-                                <td>Beklemede</td>
-                                <td>Selimcan Gürsu</td>
-                                <td><Button class="btn btn-success btn-sm">Detay</Button></td>
-                            </tr>
+                          
                         </tbody>
                     </table>
                 </div>
@@ -44,5 +33,37 @@
         </div>
       </div>
   </div>
+  <script>
+    $(document).ready(function(){
+        $('#basic-datatables').DataTable({
+            'serverSide': true,
+            'processing': true,
+            ajax: {
+                type: "GET",
+                url: "{{route('tours.fetch')}}",
+            },
+            columns: [
+                {data: "id", name: "id"},
+                {data: "name", name: "name"},
+                {data: "category_id", name: "category_id", render: function(data, type, row) {
+                  return data == 1 ? 'Yurtiçi Seyehat' : 'Yurtdışı Seyehat';
+                }},
+                {data: "start_date", name: "start_date"},
+                {data: "end_date", name: "end_date"},
+                {data: "price", name: "price" ,render:function(data,type,row){
+                    return `${data}₺`
+                }},
+                {data: "quota", name: "quota"},      
+                {data: "status_id", name: "status_id",render:function(data,type,row){
+                    return data== 1 ? "Aktif Tur" : "Tur Gerçekleştirildi"
+                }},
+                {data: "supervisor_fullname", name: "supervisor_fullname"},
+                {data: "action", render: function(data, type, row) {
+                    return `<a href="/tours/edit/${row.id}" class="btn btn-success btn-sm">Detay</a>`;
+                }},
+            ]
+        });
+    })
+</script>
 
 @endsection
