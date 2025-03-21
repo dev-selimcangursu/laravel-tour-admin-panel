@@ -160,6 +160,37 @@
                               </select>
                           </div>
                     </div>
+                    <div class="col-md-12">
+                      <h6><b>Tura Dahil Olan Hizmetler:</b></h6>
+                      <div class="row">
+                          @foreach ($tour_services as $item)
+                          <div class="col-md-3">
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="included_services[]" value="{{$item->id}}">
+                                <label class="form-check-label">
+                                      {{$item->name}}
+                                  </label>
+                              </div>
+                          </div>  
+                          @endforeach              
+                      </div>
+                  </div>
+                  <div class="col-md-12">
+                      <h6><b>Tura Dahil Olmayan Olan Hizmetler:</b></h6>
+                      <div class="row">
+                          @foreach ($tour_services as $item)
+                          <div class="col-md-3">
+                              <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" name="excluded_services[]" value="{{$item->id}}">
+                                  <label class="form-check-label">
+                                      {{$item->name}}
+                                  </label>
+                              </div>
+                          </div>  
+                          @endforeach                                    
+                      </div>
+                  </div>
+                  
                 </div>
                 <button id="save" class="btn btn-success float-end"> <i class="fas fa-save"></i>Turu Oluştur</button>
               </form>
@@ -187,6 +218,18 @@
         formData.append('price', $('#price').val());
         formData.append('directory_id', $('#directory_id').val());
         formData.append('supervisor_id', $('#supervisor_id').val());
+        
+        let includedServices = [];
+         $('input[name="included_services[]"]:checked').each(function() {
+         includedServices.push($(this).val());
+        });
+        formData.append('included_services', JSON.stringify(includedServices));  
+
+        let excludedServices = [];
+         $('input[name="excluded_services[]"]:checked').each(function() {
+          excludedServices.push($(this).val());
+        });
+        formData.append('excluded_services', JSON.stringify(excludedServices)); 
 
         let tour_picture = $('#tour_picture')[0].files[0];
         if (tour_picture) {
@@ -194,6 +237,8 @@
         }
 
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+  
 
         $.ajax({
             type: "POST",
