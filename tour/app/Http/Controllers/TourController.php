@@ -11,6 +11,8 @@ use App\Models\TourServices;
 use App\Models\TourSubcategories;
 use App\Models\TourSupervisors;
 use Exception;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -102,9 +104,35 @@ class TourController extends Controller
         }
     }
     // Tur Detay Sayfası
-    public function edit(Request $request)
+    public function edit(Request $request ,$id)
     {
-        return view('tours.edit');
+        $tour = DB::table('tours')
+        ->join('tour_subcategories', 'tour_subcategories.id', '=', 'tours.subcategory_id')
+        ->join('hotels','hotels.id','=','tours.hotel_id')
+        ->join('tour_supervisors','tour_supervisors.id','=','tours.supervisor_id')
+        ->join('tour_guides','tour_guides.id','=','tours.directory_id')
+        ->join('users','users.id','=','tours.user_id')
+        ->where('tours.id', '=', $id)
+        ->select('tours.*', 'tour_subcategories.name as subcategory_name','hotels.name as hotel_name','tour_supervisors.fullname as supervisorName','tour_guides.fullname as directorName','users.name as userName')
+        ->first();
+        $tourServices = TourServices::all();
+        $tourFeatures = DB::table('tour_features')
+        ->where('tour_id', '=', $id)
+        ->get();
+        $tour_image = DB::table('tour_images')->where('tour_id','=',$id)->get();
+        $tour_features = DB::table('tour_features')
+        ->where('tour_features.tour_id', '=', $id) 
+        ->where('tour_features.status_id', '=', 1)
+        ->join('tour_services', 'tour_features.featured_id', '=', 'tour_services.id')
+        ->select('tour_features.*', 'tour_services.name as tourServices')
+        ->get();    
+        $tourSubCategories = TourSubcategories::all();
+        $hotels = Hotels::all();
+        $directors = TourSupervisors::all();
+        $supervisors = TourSupervisors::all();
+        
+     
+        return view('tours.edit', compact('tour','tour_image','tour_features','tourSubCategories','hotels','directors','supervisors','tourServices','tourFeatures'));
     }
     // Tur İndex Sayfasında Turların Listelenmesi
     public function fetch(Request $request)
@@ -115,6 +143,76 @@ class TourController extends Controller
     
         return datatables()->eloquent($tours)->make(true);
     }
+    // Tur Detay Sayfası Tur Bilgilerini Güncelle İşlemi
+    public function update(Request $request, $id)
+    {
+
+       try {
+        $tour = Tours::find($id);
+    
+        $tour->update([
+            'name' => $request->name,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'duration' => $request->duration,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id,
+            'quota' => $request->quota,
+            'transportation_id' => $request->transportation_id,
+            'hotel_id' => $request->hotel_id,
+            'directory_id' => $request->director_id,
+            'supervisor_id' => $request->supervisors,
+        ]);
+        return response()->json(['success' =>true , 'message'=> 'Tur Bilgileri Başarıyla Güncellendi !']);
+       } catch (Exception $th) {
+        return response()->json(['success' => false , 'message'=> 'Tur Bilgileri Güncellemedi!'. ' ' . $th->getMessage()]);
+
+       }   
+    }
+    // Tur Özelliklerini Güncelleme İşlemi
+    public function updateTourFeatures(Request $request, $tourId)
+    {
+        // Post edilen hizmetleri al (seçilen hizmetler)
+        $selectedFeatures = $request->input('selected_features', []);
+        // Mevcut hizmetleri al
+        $existingFeatures = DB::table('tour_features')->where('tour_id', $tourId)->get();
+        // 1. Önce, mevcut olan tüm 'tour_features' girdilerini kontrol et ve silme işlemi yap
+        foreach ($existingFeatures as $existingFeature) {
+            // Eğer bu hizmet seçili değilse, veritabanından sil
+            if (!in_array($existingFeature->featured_id, $selectedFeatures)) {
+                DB::table('tour_features')
+                    ->where('id', $existingFeature->id)
+                    ->delete(); // Silme işlemi
+            }
+        }
+        // 2. Seçilen özellikleri ekle veya güncelle (status_id 1 veya 0)
+        foreach ($selectedFeatures as $featureId) {
+            // Eğer özellik zaten var ise, status_id'sini güncelle
+            $existingFeature = $existingFeatures->where('featured_id', $featureId)->first();
+            if ($existingFeature) {
+                // Eğer zaten mevcutsa ve tura dahilse, status_id'yi 1 yap
+                DB::table('tour_features')
+                    ->where('id', $existingFeature->id)
+                    ->update(['status_id' => 1]);
+            } else {
+                // Eğer yeni bir özellik ekleniyorsa, durumu kontrol et
+                $status_id = 1; // Varsayılan olarak tura dahilse (status_id 1)
+                // Eğer hizmet tura dahil değilse, status_id'yi 0 yap
+                DB::table('tour_features')->insert([
+                    'tour_id' => $tourId,
+                    'featured_id' => $featureId,
+                    'status_id' => $status_id,  // Tura dahilse 1, değilse 0
+                ]);
+            }
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Tur özellikleri başarıyla güncellendi.',
+        ]);
+    }
+    
+
     
     
     

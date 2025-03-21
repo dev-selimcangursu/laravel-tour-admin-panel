@@ -13,6 +13,8 @@ Route::get('/tours/create',[TourController::class,'create'])->name('tours.create
 Route::post('/tours/store',[TourController::class,'store'])->name('tours.store');
 Route::get('/tours/fetch',[TourController::class,'fetch'])->name('tours.fetch');
 Route::get('/tours/edit/{id}',[TourController::class,'edit'])->name('tours.edit');
+Route::post('/tour/update/{id}', [TourController::class, 'update'])->name('tours.update');
+Route::post('/tour/{tourId}/update-features', [TourController::class, 'updateTourFeatures'])->name('tour.update.features');
 
 
 
