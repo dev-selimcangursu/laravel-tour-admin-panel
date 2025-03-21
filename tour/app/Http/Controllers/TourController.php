@@ -31,7 +31,7 @@ class TourController extends Controller
         $supervisors = TourSupervisors::all();
         $tour_subcategories = TourSubcategories::all();
         $tour_services = TourServices::all();
-        return view('tours.create',compact('tour_subcategories','hotels','guides','supervisors','tour_services'));
+        return view('tours.create', compact('tour_subcategories', 'hotels', 'guides', 'supervisors', 'tour_services'));
     }
     // Yeni Tur Ekle Post İşlemi
     public function store(Request $request)
@@ -50,7 +50,7 @@ class TourController extends Controller
             $new_tour->starting_place = $request->input('starting_place');
             $new_tour->hotel_id = $request->input('hotel_id');
             $new_tour->price = $request->input('price');
-    
+
             if ($request->hasFile('tour_picture') && $request->file('tour_picture')->isValid()) {
                 $image = $request->file('tour_picture');
                 $imageName = time() . '-' . uniqid() . '.' . $image->getClientOriginalExtension();
@@ -72,7 +72,7 @@ class TourController extends Controller
                     $tour_service->save();
                 }
             }
-             if ($request->has('excluded_services') && is_array($excludedServices = json_decode($request->input('excluded_services')))) {
+            if ($request->has('excluded_services') && is_array($excludedServices = json_decode($request->input('excluded_services')))) {
                 foreach ($excludedServices as $value) {
                     $tour_service = new TourFeatures();
                     $tour_service->tour_id = $new_tour->id;
@@ -104,35 +104,35 @@ class TourController extends Controller
         }
     }
     // Tur Detay Sayfası
-    public function edit(Request $request ,$id)
+    public function edit(Request $request, $id)
     {
         $tour = DB::table('tours')
-        ->join('tour_subcategories', 'tour_subcategories.id', '=', 'tours.subcategory_id')
-        ->join('hotels','hotels.id','=','tours.hotel_id')
-        ->join('tour_supervisors','tour_supervisors.id','=','tours.supervisor_id')
-        ->join('tour_guides','tour_guides.id','=','tours.directory_id')
-        ->join('users','users.id','=','tours.user_id')
-        ->where('tours.id', '=', $id)
-        ->select('tours.*', 'tour_subcategories.name as subcategory_name','hotels.name as hotel_name','tour_supervisors.fullname as supervisorName','tour_guides.fullname as directorName','users.name as userName')
-        ->first();
+            ->join('tour_subcategories', 'tour_subcategories.id', '=', 'tours.subcategory_id')
+            ->join('hotels', 'hotels.id', '=', 'tours.hotel_id')
+            ->join('tour_supervisors', 'tour_supervisors.id', '=', 'tours.supervisor_id')
+            ->join('tour_guides', 'tour_guides.id', '=', 'tours.directory_id')
+            ->join('users', 'users.id', '=', 'tours.user_id')
+            ->where('tours.id', '=', $id)
+            ->select('tours.*', 'tour_subcategories.name as subcategory_name', 'hotels.name as hotel_name', 'tour_supervisors.fullname as supervisorName', 'tour_guides.fullname as directorName', 'users.name as userName')
+            ->first();
         $tourServices = TourServices::all();
         $tourFeatures = DB::table('tour_features')
-        ->where('tour_id', '=', $id)
-        ->get();
-        $tour_image = DB::table('tour_images')->where('tour_id','=',$id)->get();
+            ->where('tour_id', '=', $id)
+            ->get();
+        $tour_image = DB::table('tour_images')->where('tour_id', '=', $id)->get();
         $tour_features = DB::table('tour_features')
-        ->where('tour_features.tour_id', '=', $id) 
-        ->where('tour_features.status_id', '=', 1)
-        ->join('tour_services', 'tour_features.featured_id', '=', 'tour_services.id')
-        ->select('tour_features.*', 'tour_services.name as tourServices')
-        ->get();    
+            ->where('tour_features.tour_id', '=', $id)
+            ->where('tour_features.status_id', '=', 1)
+            ->join('tour_services', 'tour_features.featured_id', '=', 'tour_services.id')
+            ->select('tour_features.*', 'tour_services.name as tourServices')
+            ->get();
         $tourSubCategories = TourSubcategories::all();
         $hotels = Hotels::all();
         $directors = TourSupervisors::all();
         $supervisors = TourSupervisors::all();
-        
-     
-        return view('tours.edit', compact('tour','tour_image','tour_features','tourSubCategories','hotels','directors','supervisors','tourServices','tourFeatures'));
+
+
+        return view('tours.edit', compact('tour', 'tour_image', 'tour_features', 'tourSubCategories', 'hotels', 'directors', 'supervisors', 'tourServices', 'tourFeatures'));
     }
     // Tur İndex Sayfasında Turların Listelenmesi
     public function fetch(Request $request)
@@ -140,36 +140,36 @@ class TourController extends Controller
         $tours = Tours::query()
             ->join('tour_supervisors', 'tours.supervisor_id', '=', 'tour_supervisors.id')
             ->select('tours.*', 'tour_supervisors.fullname as supervisor_fullname');
-    
+
         return datatables()->eloquent($tours)->make(true);
     }
     // Tur Detay Sayfası Tur Bilgilerini Güncelle İşlemi
     public function update(Request $request, $id)
     {
 
-       try {
-        $tour = Tours::find($id);
-    
-        $tour->update([
-            'name' => $request->name,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'duration' => $request->duration,
-            'price' => $request->price,
-            'category_id' => $request->category_id,
-            'subcategory_id' => $request->subcategory_id,
-            'quota' => $request->quota,
-            'transportation_id' => $request->transportation_id,
-            'hotel_id' => $request->hotel_id,
-            'directory_id' => $request->director_id,
-            'supervisor_id' => $request->supervisors,
-        ]);
-        return response()->json(['success' =>true , 'message'=> 'Tur Bilgileri Başarıyla Güncellendi !']);
-       } catch (Exception $th) {
-        return response()->json(['success' => false , 'message'=> 'Tur Bilgileri Güncellemedi!'. ' ' . $th->getMessage()]);
+        try {
+            $tour = Tours::find($id);
 
-       }   
+            $tour->update([
+                'name' => $request->name,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'duration' => $request->duration,
+                'price' => $request->price,
+                'category_id' => $request->category_id,
+                'subcategory_id' => $request->subcategory_id,
+                'quota' => $request->quota,
+                'transportation_id' => $request->transportation_id,
+                'hotel_id' => $request->hotel_id,
+                'directory_id' => $request->director_id,
+                'supervisor_id' => $request->supervisors,
+            ]);
+            return response()->json(['success' => true, 'message' => 'Tur Bilgileri Başarıyla Güncellendi !']);
+        } catch (Exception $th) {
+            return response()->json(['success' => false, 'message' => 'Tur Bilgileri Güncellemedi!' . ' ' . $th->getMessage()]);
+        }
     }
+
     // Tur Özelliklerini Güncelleme İşlemi
     public function updateTourFeatures(Request $request, $tourId)
     {
@@ -211,9 +211,30 @@ class TourController extends Controller
             'message' => 'Tur özellikleri başarıyla güncellendi.',
         ]);
     }
+    // Turu İptal Etme İşlemi
+    public function cancelTour(Request $request)
+    {
+        try {
+            $tour = DB::table('tours')->where('id', $request->input('tourId'))->update(['status_id' => 2]);
     
-
+            if ($tour) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Tur başarıyla iptal edildi.',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tur iptal edilemedi.',
+                ]);
+            }
     
-    
+        } catch (Exception $error) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tur İptal Edilemedi: ' . $error->getMessage(),
+            ]);
+        }
+    }
     
 }

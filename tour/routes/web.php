@@ -15,6 +15,7 @@ Route::get('/tours/fetch',[TourController::class,'fetch'])->name('tours.fetch');
 Route::get('/tours/edit/{id}',[TourController::class,'edit'])->name('tours.edit');
 Route::post('/tour/update/{id}', [TourController::class, 'update'])->name('tours.update');
 Route::post('/tour/{tourId}/update-features', [TourController::class, 'updateTourFeatures'])->name('tour.update.features');
+Route::post('/tour/remove', [TourController::class, 'cancelTour'])->name('tour.remove');
 
 
 
