@@ -55,7 +55,7 @@
                 }},
                 {data: "quota", name: "quota"},      
                 {data: "status_id", name: "status_id",render:function(data,type,row){
-                    return data== 1 ? "Aktif Tur" : "Tur Gerçekleştirildi"
+                    return data == 1 ? "Aktif Tur" : (data == 2 ? "İptal Edildi" : (data == 3 ? "Tur Gerçekleştirildi" : "Bilinmeyen Durum"));
                 }},
                 {data: "supervisor_fullname", name: "supervisor_fullname"},
                 {data: "action", render: function(data, type, row) {
