@@ -3,6 +3,8 @@
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<title>Tur Firması Admin Paneli</title>
+	<meta name="csrf-token" content="{{ csrf_token() }}">
+	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
 	<link rel="icon" href="assets/img/kaiadmin/favicon.ico" type="image/x-icon"/>
 	<script src="{{asset('assets/js/plugin/webfont/webfont.min.js')}}"></script>
@@ -58,7 +60,6 @@
 		</div>
 
 	</div>
-	<script src="{{asset('assets/js/core/jquery-3.7.1.min.js')}}"></script>
 	<script src="{{asset('assets/js/core/popper.min.js')}}"></script>
 	<script src="{{asset('assets/js/core/bootstrap.min.js')}}"></script>
 	<script src="{{asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js')}}"></script>
@@ -74,6 +75,11 @@
 	<script src="{{asset('assets/js/setting-demo.js')}}"></script>
 	<script src="{{asset('assets/js/demo.js')}}"></script>
 	<script>
+	    $(document).ready(function() {
+         $('#basic-datatables').DataTable({
+		 });
+
+    })
 		$('#lineChart').sparkline([102,109,120,99,110,105,115], {
 			type: 'line',
 			height: '70',
